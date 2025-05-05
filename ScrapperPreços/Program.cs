@@ -44,12 +44,12 @@ internal class Program
                 {
                     foreach (var item in items.EnumerateArray())
                     {
-                        resultados.Add(new PrecoGoogle(
-                            item.GetProperty("title").GetString() ?? "",
-                            item.GetProperty("price").GetString() ?? "",
-                            item.GetProperty("source").GetString() ?? "",
-                            item.GetProperty("link").GetString() ?? ""
-                        ));
+                        string title = item.TryGetProperty("title", out var titleProp) ? titleProp.GetString() ?? "" : "";
+                        string price = item.TryGetProperty("price", out var priceProp) ? priceProp.GetString() ?? "" : "";
+                        string source = item.TryGetProperty("source", out var sourceProp) ? sourceProp.GetString() ?? "" : "";
+                        string link = item.TryGetProperty("link", out var linkProp) ? linkProp.GetString() ?? "" : "";
+
+                        resultados.Add(new PrecoGoogle(title, price, source, link));
                     }
                 }
             }
