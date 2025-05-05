@@ -1,4 +1,4 @@
-using System.Text.Json;
+ï»¿using System.Text.Json;
 using System.Collections.Concurrent;
 using Microsoft.Extensions.Logging;
 using Microsoft.ApplicationInsights.Extensibility;
@@ -37,7 +37,7 @@ internal class Program
             return produtos;
         });
 
-        // Retorna o melhor preço por produto
+        // Retorna o melhor preÃ§o por produto
         app.MapGet("/precos", async () =>
         {
             var http = new HttpClient();
@@ -51,7 +51,7 @@ internal class Program
 
                 try
                 {
-                    logger.LogInformation("Buscando preços para {Produto} na URL {Url}", nome, url);
+                    logger.LogInformation("Buscando preÃ§os para {Produto} na URL {Url}", nome, url);
 
                     var response = await http.GetStringAsync(url);
                     var json = JsonDocument.Parse(response);
@@ -73,7 +73,7 @@ internal class Program
                             }
                             else
                             {
-                                logger.LogWarning("Preço inválido ignorado: '{PrecoTexto}' para produto {Produto}", priceStr, nome);
+                                logger.LogWarning("PreÃ§o invÃ¡lido ignorado: '{PrecoTexto}' para produto {Produto}", priceStr, nome);
                             }
                         }
 
@@ -81,11 +81,11 @@ internal class Program
                         if (melhor is not null)
                         {
                             melhores.Add(melhor);
-                            logger.LogInformation("Melhor preço para {Produto}: {Preco} - {Loja}", nome, melhor.Preco, melhor.Loja);
+                            logger.LogInformation("Melhor preÃ§o para {Produto}: {Preco} - {Loja}", nome, melhor.Preco, melhor.Loja);
                         }
                         else
                         {
-                            logger.LogWarning("Nenhum preço válido encontrado para {Produto}", nome);
+                            logger.LogWarning("Nenhum preÃ§o vÃ¡lido encontrado para {Produto}", nome);
                         }
                     }
                     else
@@ -95,7 +95,7 @@ internal class Program
                 }
                 catch (Exception ex)
                 {
-                    logger.LogError(ex, "Erro ao buscar preços para {Produto}", nome);
+                    logger.LogError(ex, "Erro ao buscar preÃ§os para {Produto}", nome);
                 }
             }
 
@@ -103,7 +103,7 @@ internal class Program
         });
 
 
-        // Retorna todos os preços coletados em JSON
+        // Retorna todos os preÃ§os coletados em JSON
         app.MapGet("/precos/todos", async () =>
         {
             var http = new HttpClient();
@@ -138,7 +138,7 @@ internal class Program
                 }
                 catch (Exception ex)
                 {
-                    logger.LogError(ex, "Erro ao buscar todos os preços para {Produto}", nome);
+                    logger.LogError(ex, "Erro ao buscar todos os preÃ§os para {Produto}", nome);
                 }
             }
 
@@ -161,22 +161,27 @@ internal class Program
 
         return Regex.Replace(normalized, @"\s+", " ").Trim();
     }
-
     static bool TryParsePrice(string raw, out decimal preco)
     {
         preco = 0;
         try
         {
-            // Exemplo de entrada: "R$ 1.709,05"
+            if (string.IsNullOrWhiteSpace(raw)) return false;
+
+            // Remove "R$", espaÃ§os e normaliza separadores
             var clean = raw
                 .Replace("R$", "")
                 .Trim();
 
-            // Remove separadores de milhar (ponto)
-            clean = clean.Replace(".", "");
-
-            // Substitui vírgula decimal por ponto
-            clean = clean.Replace(",", ".");
+            // Detecta e converte corretamente os formatos brasileiros
+            // Ex: "1.709,05" â†’ "1709.05"
+            if (clean.Contains(','))
+            {
+                // Assume que ponto Ã© separador de milhar â†’ remove
+                clean = clean.Replace(".", "");
+                // VÃ­rgula Ã© separador decimal â†’ troca por ponto
+                clean = clean.Replace(",", ".");
+            }
 
             return decimal.TryParse(
                 clean,
@@ -199,7 +204,7 @@ record PrecoGoogle(string Produto, decimal Preco, string Loja, string Link)
 
 class ProdutoService
 {
-    private readonly ConcurrentBag<string> _produtos = ["Midea CFBD42 Dual Freezone 4 bocas", "Lava-louças 14 Serviços Electrolux LL14X Cor Inox", "churrasqueira a gás cooktop de inox felesa"];
+    private readonly ConcurrentBag<string> _produtos = ["Midea CFBD42 Dual Freezone 4 bocas", "Lava-louÃ§as 14 ServiÃ§os Electrolux LL14X Cor Inox", "churrasqueira a gÃ¡s cooktop de inox felesa"];
 
     public void Adicionar(string nome)
     {
