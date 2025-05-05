@@ -1,0 +1,86 @@
+# Build results
+bin/
+obj/
+[Ll]og/
+*.log
+
+# Visual Studio
+.vs/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# Rider
+.idea/
+
+# VS Code
+.vscode/
+
+# User-specific files
+*.rsuser
+*.sln.docstates
+*.user
+*.suo
+
+# Auto-generated files
+Generated_Code/
+
+# NuGet
+*.nupkg
+*.snupkg
+.nuget/
+packages/
+project.lock.json
+project.fragment.lock.json
+artifacts/
+
+# ASP.NET Scaffolding
+ScaffoldingReadMe.txt
+
+# Entity Framework Migrations snapshot files
+Migrations/*.Designer.cs
+
+# Tye
+.tye/
+
+# Coverage & reports
+TestResults/
+coverage/
+*.coverage
+*.coveragexml
+*.codecoverage
+*.lcov
+
+# Logs
+*.log
+*.tlog
+
+# Publish outputs
+publish/
+out/
+
+# Others
+*.dbmdl
+*.bak
+*.sql
+*.cache
+*.pidb
+*.pdb
+
+# OS generated files
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+*.DS_Store
+
+# OneDrive
+*.tmp
+~$*
+*.lnk
+
+# IDE-specific
+_ReSharper*/
+*.resharper
+*.DotSettings.user
