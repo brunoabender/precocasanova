@@ -1,7 +1,4 @@
 ﻿using System.Text.Json;
-using System.Collections.Concurrent;
-using Microsoft.Extensions.Logging;
-using Microsoft.ApplicationInsights.Extensibility;
 using System.Text.RegularExpressions;
 
 internal class Program
@@ -25,7 +22,7 @@ internal class Program
 
         app.MapPost("/produtos", (ProdutoRequest req) =>
         {
-            produtoService.Adicionar(req.Nome);
+            produtoService.Adicionar(req.Nome, req.Categoria);
             logger.LogInformation("Produto cadastrado: {Produto}", req.Nome);
             return Results.Ok("Produto cadastrado");
         });
@@ -44,14 +41,14 @@ internal class Program
             var apiKey = "585f17ae40b08ef777d98cdec97aa71db95e706694d01f1c6f5294bf10f00a1d";
             var melhores = new List<PrecoGoogle>();
 
-            foreach (var nome in produtoService.Listar())
+            foreach (var itemDicionario in produtoService.Listar())
             {
-                var query = Uri.EscapeDataString(Sanitize(nome));
-                var url = $"https://serpapi.com/search.json?q={query}&engine=google_shopping&gl=br&hl=pt-BR&api_key={apiKey}";
+                var query = Uri.EscapeDataString(Sanitize(itemDicionario.Key));
+                var url = $"https://serpapi.com/search.json?q={query}&engine=google_shopping&gl=br&hl=pt-BR&api_key={apiKey}" + $"{(string.IsNullOrEmpty(itemDicionario.Value) ? "" : $"&tbs=cat:{itemDicionario.Value}")}";
 
                 try
                 {
-                    logger.LogInformation("Buscando preços para {Produto} na URL {Url}", nome, url);
+                    logger.LogInformation("Buscando preços para {Produto} na URL {Url}", itemDicionario.Key, url);
 
                     var response = await http.GetStringAsync(url);
                     var json = JsonDocument.Parse(response);
@@ -69,11 +66,11 @@ internal class Program
 
                             if (TryParsePrice(priceStr, out decimal preco))
                             {
-                                precos.Add(new PrecoGoogle(nome, preco, source, link));
+                                precos.Add(new PrecoGoogle(itemDicionario.Key, preco, source, link));
                             }
                             else
                             {
-                                logger.LogWarning("Preço inválido ignorado: '{PrecoTexto}' para produto {Produto}", priceStr, nome);
+                                logger.LogWarning("Preço inválido ignorado: '{PrecoTexto}' para produto {Produto}", priceStr, itemDicionario.Key);
                             }
                         }
 
@@ -81,21 +78,21 @@ internal class Program
                         if (melhor is not null)
                         {
                             melhores.Add(melhor);
-                            logger.LogInformation("Melhor preço para {Produto}: {Preco} - {Loja}", nome, melhor.Preco, melhor.Loja);
+                            logger.LogInformation("Melhor preço para {Produto}: {Preco} - {Loja}", itemDicionario.Key, melhor.Preco, melhor.Loja);
                         }
                         else
                         {
-                            logger.LogWarning("Nenhum preço válido encontrado para {Produto}", nome);
+                            logger.LogWarning("Nenhum preço válido encontrado para {Produto}", itemDicionario.Key);
                         }
                     }
                     else
                     {
-                        logger.LogWarning("Nenhum resultado encontrado para {Produto}", nome);
+                        logger.LogWarning("Nenhum resultado encontrado para {Produto}", itemDicionario.Key);
                     }
                 }
                 catch (Exception ex)
                 {
-                    logger.LogError(ex, "Erro ao buscar preços para {Produto}", nome);
+                    logger.LogError(ex, "Erro ao buscar preços para {Produto}", itemDicionario.Key);
                 }
             }
 
@@ -110,10 +107,10 @@ internal class Program
             var apiKey = "585f17ae40b08ef777d98cdec97aa71db95e706694d01f1c6f5294bf10f00a1d";
             var todos = new List<PrecoGoogle>();
 
-            foreach (var nome in produtoService.Listar())
+            foreach (var itemDicionario in produtoService.Listar())
             {
-                var query = Uri.EscapeDataString(Sanitize(nome));
-                var url = $"https://serpapi.com/search.json?q={query}&engine=google_shopping&gl=br&hl=pt-BR&api_key={apiKey}";
+                var query = Uri.EscapeDataString(Sanitize(itemDicionario.Key));
+                var url = $"https://serpapi.com/search.json?q={query}&engine=google_shopping&gl=br&hl=pt-BR&api_key={apiKey}" +$"{(string.IsNullOrEmpty(itemDicionario.Value) ? "" : $"&tbs=cat:{itemDicionario.Value}")}";
 
                 try
                 {
@@ -138,7 +135,7 @@ internal class Program
                 }
                 catch (Exception ex)
                 {
-                    logger.LogError(ex, "Erro ao buscar todos os preços para {Produto}", nome);
+                    logger.LogError(ex, "Erro ao buscar todos os preços para {Produto}", itemDicionario.Key);
                 }
             }
 
@@ -196,7 +193,7 @@ internal class Program
     }
 }
 
-record ProdutoRequest(string Nome);
+record ProdutoRequest(string Nome, string? Categoria);
 record PrecoGoogle(string Produto, decimal Preco, string Loja, string Link)
 {
     public string PrecoFormatado => Preco.ToString("C", new System.Globalization.CultureInfo("pt-BR"));
@@ -204,13 +201,20 @@ record PrecoGoogle(string Produto, decimal Preco, string Loja, string Link)
 
 class ProdutoService
 {
-    private readonly ConcurrentBag<string> _produtos = ["Midea CFBD42 Dual Freezone 4 bocas", "Lava-louças 14 Serviços Electrolux LL14X Cor Inox", "churrasqueira a gás cooktop de inox felesa"];
 
-    public void Adicionar(string nome)
+    //[ ["Midea CFBD42 Dual Freezone 4 bocas", "2626"], ["Lava-louças 14 Serviços Electrolux LL14X Cor Inox", ""], ["churrasqueira a gás cooktop de inox felesa", ""] ];
+    private readonly Dictionary<string, string> _produtos = new()
+    {
+        { "Midea CFBD42 Dual Freezone 4 bocas", "2626" },
+        { "Lava-louças 14 Serviços Electrolux LL14X Cor Inox", "" },
+        { "churrasqueira a gás cooktop de inox felesa", "" }
+    };
+
+    public void Adicionar(string nome, string categoriaId)
     {
         if (!string.IsNullOrWhiteSpace(nome))
-            _produtos.Add(nome);
+            _produtos.Add(nome, categoriaId);
     }
 
-    public List<string> Listar() => _produtos.ToList();
+    public Dictionary<string,string> Listar() => _produtos;
 }
