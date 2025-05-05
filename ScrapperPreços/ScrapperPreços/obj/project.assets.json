@@ -5850,11 +5850,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\bruno\\source\\repos\\ScrapperPreços\\ScrapperPreços\\ScrapperPreços.csproj",
+      "projectUniqueName": "C:\\Projetos\\precocasanova\\ScrapperPreços\\ScrapperPreços\\ScrapperPreços.csproj",
       "projectName": "ScrapperPreços",
-      "projectPath": "C:\\Users\\bruno\\source\\repos\\ScrapperPreços\\ScrapperPreços\\ScrapperPreços.csproj",
+      "projectPath": "C:\\Projetos\\precocasanova\\ScrapperPreços\\ScrapperPreços\\ScrapperPreços.csproj",
       "packagesPath": "C:\\Users\\bruno\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\bruno\\source\\repos\\ScrapperPreços\\ScrapperPreços\\obj\\",
+      "outputPath": "C:\\Projetos\\precocasanova\\ScrapperPreços\\ScrapperPreços\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"

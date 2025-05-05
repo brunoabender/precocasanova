@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "5Pgqb7OSuzk=",
+  "dgSpecHash": "Y/LinwqoNEg=",
   "success": true,
-  "projectFilePath": "C:\\Users\\bruno\\source\\repos\\ScrapperPreços\\ScrapperPreços\\ScrapperPreços.csproj",
+  "projectFilePath": "C:\\Projetos\\precocasanova\\ScrapperPreços\\ScrapperPreços\\ScrapperPreços.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\bruno\\.nuget\\packages\\microsoft.csharp\\4.3.0\\microsoft.csharp.4.3.0.nupkg.sha512",
     "C:\\Users\\bruno\\.nuget\\packages\\microsoft.extensions.apidescription.server\\6.0.5\\microsoft.extensions.apidescription.server.6.0.5.nupkg.sha512",

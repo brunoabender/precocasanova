@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("ScrapperPreços")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+da0758503f003b114efdb1919aedf87911353e3b")]
 [assembly: System.Reflection.AssemblyProductAttribute("ScrapperPreços")]
 [assembly: System.Reflection.AssemblyTitleAttribute("ScrapperPreços")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
